@@ -14,11 +14,16 @@ import { daysOfWeek, getNextDay } from "../helpers/days";
 const MainView = () => {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [nextDay, setNextDay] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCompute = () => {
     if (!selectedDay) return;
-    const result = getNextDay(selectedDay);
-    setNextDay(result);
+    setIsLoading(true);
+    setTimeout(() => {
+      const result = getNextDay(selectedDay);
+      setNextDay(result);
+      setIsLoading(false);
+    }, 2000);
   };
 
   return (
@@ -52,6 +57,7 @@ const MainView = () => {
             size="lg"
             onClick={handleCompute}
             aria-disabled={!selectedDay}
+            loading={isLoading}
           >
             Compute next day
           </Button>
