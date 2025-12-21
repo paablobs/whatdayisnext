@@ -26,14 +26,14 @@ const MainView = () => {
       setNextDay(result);
       setIsLoading(false);
       setSelectedDay(null);
-    }, 3000);
+    }, 4000);
   };
 
   useEffect(() => {
     if (!isLoading) return;
     const interval = setInterval(() => {
       setPhrase(getRandomSarcasticPhrase());
-    }, 1000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [isLoading]);
