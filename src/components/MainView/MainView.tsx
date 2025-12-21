@@ -46,7 +46,7 @@ const MainView = () => {
       alignItems="center"
       display="flex"
     >
-      <VStack w="100%" textAlign="center" gap="40px">
+      <VStack w="100%" textAlign="center" gap={5}>
         <Box>
           <Heading size="6xl" mb={2}>
             What day is next?
@@ -66,6 +66,9 @@ const MainView = () => {
             />
           ))}
         </SimpleGrid>
+        <Text textStyle="sm" minH={5}>
+          {isLoading ? phrase : ""}
+        </Text>
         <Box>
           <Button
             colorScheme="blue"
@@ -82,9 +85,7 @@ const MainView = () => {
             <Text textStyle="xl" visibility={nextDay ? "visible" : "hidden"}>
               Next day is {nextDay}
             </Text>
-            <Text textStyle="xl" visibility={isLoading ? "visible" : "hidden"}>
-              {isLoading ? phrase : ""}
-            </Text>
+            {/* <Text textStyle="xl">{isLoading ? phrase : ""}</Text> */}
           </>
         }
       </VStack>
