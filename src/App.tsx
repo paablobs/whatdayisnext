@@ -6,7 +6,6 @@ function App() {
   return (
     <ChakraProvider value={system}>
       <MainView />
-      test
     </ChakraProvider>
   );
 }
