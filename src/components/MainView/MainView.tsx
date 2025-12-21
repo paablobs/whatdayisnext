@@ -82,7 +82,9 @@ const MainView = () => {
             <Text textStyle="xl" visibility={nextDay ? "visible" : "hidden"}>
               Next day is {nextDay}
             </Text>
-            <Text textStyle="xl">{isLoading ? phrase : ""}</Text>
+            <Text textStyle="xl" visibility={isLoading ? "visible" : "hidden"}>
+              {isLoading ? phrase : ""}
+            </Text>
           </>
         }
       </VStack>

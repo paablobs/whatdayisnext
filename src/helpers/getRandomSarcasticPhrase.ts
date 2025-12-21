@@ -31,7 +31,15 @@ export const sarcasticPhrases: string[] = [
   "Peak human intelligence right here.",
 ];
 
+let lastIndex: number | null = null;
+
 export const getRandomSarcasticPhrase = (): string => {
-  const index = Math.floor(Math.random() * sarcasticPhrases.length);
+  let index: number;
+
+  do {
+    index = Math.floor(Math.random() * sarcasticPhrases.length);
+  } while (index === lastIndex);
+
+  lastIndex = index;
   return sarcasticPhrases[index];
 };
