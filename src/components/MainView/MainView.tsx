@@ -23,6 +23,7 @@ const MainView = () => {
       const result = getNextDay(selectedDay);
       setNextDay(result);
       setIsLoading(false);
+      setSelectedDay(null);
     }, 2000);
   };
 
@@ -47,7 +48,10 @@ const MainView = () => {
               key={day}
               day={day}
               isSelected={selectedDay === day}
-              onSelect={(d) => setSelectedDay(d)}
+              onSelect={(d) => {
+                setSelectedDay(d);
+                setNextDay(null);
+              }}
             />
           ))}
         </SimpleGrid>
@@ -62,7 +66,11 @@ const MainView = () => {
             Compute next day
           </Button>
         </Box>
-        {nextDay && <Text textStyle="xl">Next day is {nextDay}</Text>}
+        {
+          <Text textStyle="xl" visibility={nextDay ? "visible" : "hidden"}>
+            Next day is {nextDay}
+          </Text>
+        }
       </VStack>
     </Container>
   );
