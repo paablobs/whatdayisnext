@@ -7,14 +7,16 @@ import {
   Container,
   Text,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DayButton from "../DayButton/DayButton";
-import { daysOfWeek, getNextDay } from "../helpers/days";
+import { daysOfWeek, getNextDay } from "../../helpers/days";
+import { getRandomSarcasticPhrase } from "../../helpers/getRandomSarcasticPhrase";
 
 const MainView = () => {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [nextDay, setNextDay] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [phrase, setPhrase] = useState(getRandomSarcasticPhrase());
 
   const handleCompute = () => {
     if (!selectedDay) return;
@@ -24,8 +26,17 @@ const MainView = () => {
       setNextDay(result);
       setIsLoading(false);
       setSelectedDay(null);
-    }, 2000);
+    }, 3000);
   };
+
+  useEffect(() => {
+    if (!isLoading) return;
+    const interval = setInterval(() => {
+      setPhrase(getRandomSarcasticPhrase());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   return (
     <Container
@@ -67,9 +78,12 @@ const MainView = () => {
           </Button>
         </Box>
         {
-          <Text textStyle="xl" visibility={nextDay ? "visible" : "hidden"}>
-            Next day is {nextDay}
-          </Text>
+          <>
+            <Text textStyle="xl" visibility={nextDay ? "visible" : "hidden"}>
+              Next day is {nextDay}
+            </Text>
+            <Text textStyle="xl">{isLoading ? phrase : ""}</Text>
+          </>
         }
       </VStack>
     </Container>
