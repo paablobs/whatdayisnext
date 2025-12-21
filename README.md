@@ -1,73 +1,25 @@
-# React + TypeScript + Vite
+# What Day Is Next?
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Wake up and don't know what day comes next? Don't worry, that's what machines are for.
 
-Currently, two official plugins are available:
+A minimalist web application that solves humanity's most trivial problem: figuring out what day of the week comes after another. If your brain is so fried that you need a server for this task, welcome to the club.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How does it work?
 
-## React Compiler
+1. Select what day it is today
+2. Press the magical "Compute next day" button
+3. Wait for the machine to do its "complex calculation"
+4. Discover the next day (spoiler: there's a pattern)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the ESLint configuration
+Because for a simple problem, nothing beats an overcomplicated solution:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **React 19** + **TypeScript** — Type-safety for the obvious
+- **Chakra UI v3** — Components that look good in the dark (like your soul)
+- **Vite** — Fast bundler you deserve
+- **Dark Mode** — By default, because the universe is dark
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**For those people who find it quite hard to get through the day.**
