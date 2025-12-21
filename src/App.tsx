@@ -1,11 +1,12 @@
-import { Provider } from "@/components/ui/provider";
+import { ChakraProvider } from "@chakra-ui/react";
 import MainView from "./components/MainView/MainView";
+import { system } from "./theme";
 
 function App() {
   return (
-    <Provider>
+    <ChakraProvider value={system}>
       <MainView />
-    </Provider>
+    </ChakraProvider>
   );
 }
 

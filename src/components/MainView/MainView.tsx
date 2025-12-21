@@ -22,15 +22,20 @@ const MainView = () => {
   };
 
   return (
-    <Container maxW="container.md" py={8} h="100dvh">
-      <VStack w="100%" align="stretch">
+    <Container
+      py={8}
+      h="100vh"
+      justifyContent="center"
+      alignItems="center"
+      display="flex"
+    >
+      <VStack w="100%" textAlign="center" gap="40px">
         <Box>
-          <Heading as="h1" size="xl" mb={2}>
+          <Heading size="6xl" mb={2}>
             What day is next?
           </Heading>
-          <Text fontSize="lg">Select what day is today:</Text>
+          <Text textStyle="2xl">Select what day is today:</Text>
         </Box>
-
         <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 7 }} w="100%">
           {daysOfWeek.map((day) => (
             <DayButton
@@ -41,7 +46,6 @@ const MainView = () => {
             />
           ))}
         </SimpleGrid>
-
         <Box>
           <Button
             colorScheme="blue"
@@ -52,8 +56,7 @@ const MainView = () => {
             Compute next day
           </Button>
         </Box>
-
-        {nextDay && <Text fontSize="lg">Next day is {nextDay}</Text>}
+        {nextDay && <Text textStyle="xl">Next day is {nextDay}</Text>}
       </VStack>
     </Container>
   );

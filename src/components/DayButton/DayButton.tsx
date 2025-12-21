@@ -14,7 +14,6 @@ const DayButton = ({ day, isSelected = false, onSelect }: DayButtonProps) => {
       colorScheme={isSelected ? "blue" : undefined}
       aria-pressed={isSelected}
       size="md"
-      minW="100px"
       _focus={{ boxShadow: "outline" }}
     >
       {day}
