@@ -41,7 +41,7 @@ const MainView = () => {
   return (
     <Container
       py={8}
-      h="100vh"
+      h="100dvh"
       justifyContent="center"
       alignItems="center"
       display="flex"
