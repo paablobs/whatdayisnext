@@ -1,4 +1,4 @@
-export const sarcasticPhrases: string[] = [
+export const nextPhrases: string[] = [
   "Wow. Calculating tomorrow for you…",
   "Thinking, since you didn’t feel like it…",
   "Hang on. This is harder than it looks… apparently.",
@@ -31,15 +31,54 @@ export const sarcasticPhrases: string[] = [
   "Peak human intelligence right here.",
 ];
 
-let lastIndex: number | null = null;
+export const todayPhrases: string[] = [
+  "Checking what day it is… for you.",
+  "Let’s figure out what planet you’re on today.",
+  "Consulting reality… one moment.",
+  "Determining what day you woke up in.",
+  "Because calendars are apparently decorative.",
+  "Hold on, we’ll ask the universe.",
+  "Verifying that today is… today.",
+  "Double-checking the concept of “now.”",
+  "Accessing basic awareness module…",
+  "Loading today’s date, since you couldn’t.",
+  "Calculating what day you’re currently living in.",
+  "Let’s confirm you exist in time.",
+  "Syncing with the obvious…",
+  "Finding out what day you’ve been in all along.",
+  "Cross-referencing with common sense…",
+  "One second. Time is complicated, apparently.",
+  "Processing current-day detection…",
+  "Because glancing at a calendar was too mainstream.",
+  "Determining today’s identity crisis…",
+  "Checking if it’s still the same day as five minutes ago.",
+  "Running advanced “what is today” protocol.",
+  "Using modern servers to answer ancient questions.",
+  "Yes, today still exists.",
+  "Making sure you didn’t time travel.",
+  "Looking outside was not an option, huh?",
+  "Confirming today hasn’t been canceled.",
+  "Engaging hyper-intelligent day recognition system.",
+  "We’ll let you know what day you’re in.",
+  "Calculating the present moment… carefully.",
+  "Peak productivity right here.",
+];
 
-export const getRandomSarcasticPhrase = (): string => {
+const lastIndexByMode: Record<string, number | null> = {
+  next: null,
+  today: null,
+};
+
+export const getRandomSarcasticPhrase = (
+  mode: "today" | "next" = "next"
+): string => {
+  const pool = mode === "today" ? todayPhrases : nextPhrases;
   let index: number;
 
   do {
-    index = Math.floor(Math.random() * sarcasticPhrases.length);
-  } while (index === lastIndex);
+    index = Math.floor(Math.random() * pool.length);
+  } while (index === lastIndexByMode[mode]);
 
-  lastIndex = index;
-  return sarcasticPhrases[index];
+  lastIndexByMode[mode] = index;
+  return pool[index];
 };

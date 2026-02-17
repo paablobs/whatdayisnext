@@ -16,10 +16,12 @@ const MainView = () => {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [nextDay, setNextDay] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [phrase, setPhrase] = useState(getRandomSarcasticPhrase());
+  const [loadingMode, setLoadingMode] = useState<"next" | "today">("next");
+  const [phrase, setPhrase] = useState(getRandomSarcasticPhrase("next"));
 
   const handleCompute = () => {
     if (!selectedDay) return;
+    setLoadingMode("next");
     setIsLoading(true);
     setTimeout(() => {
       const result = getNextDay(selectedDay);
@@ -29,14 +31,30 @@ const MainView = () => {
     }, 4000);
   };
 
+  const computeToday = () => {
+    setLoadingMode("today");
+    setIsLoading(true);
+    setTimeout(() => {
+      const jsDay = new Date().getDay();
+      const index = (jsDay + 6) % daysOfWeek.length; // map JS 0=Sun..6=Sat to daysOfWeek starting with Monday
+      const todayName = daysOfWeek[index];
+      setSelectedDay(todayName);
+      setNextDay(null);
+      setIsLoading(false);
+    }, 4000);
+  };
+
   useEffect(() => {
     if (!isLoading) return;
     const interval = setInterval(() => {
-      setPhrase(getRandomSarcasticPhrase());
+      setPhrase(getRandomSarcasticPhrase(loadingMode));
     }, 2000);
 
+    // set an initial phrase immediately when loading starts
+    setPhrase(getRandomSarcasticPhrase(loadingMode));
+
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [isLoading, loadingMode]);
 
   return (
     <Container
@@ -70,22 +88,33 @@ const MainView = () => {
           {isLoading ? phrase : ""}
         </Text>
         <Box>
-          <Button
-            colorScheme="blue"
-            size="lg"
-            onClick={handleCompute}
-            aria-disabled={!selectedDay}
-            loading={isLoading}
-          >
-            Compute next day
-          </Button>
+          {selectedDay ? (
+            <Button
+              colorScheme="blue"
+              size="lg"
+              onClick={handleCompute}
+              aria-disabled={isLoading}
+              loading={isLoading}
+            >
+              Compute next day
+            </Button>
+          ) : (
+            <Button
+              colorScheme="blue"
+              size="lg"
+              onClick={computeToday}
+              aria-disabled={isLoading}
+              loading={isLoading}
+            >
+              What day is today?
+            </Button>
+          )}
         </Box>
         {
           <>
             <Text textStyle="xl" visibility={nextDay ? "visible" : "hidden"}>
               Next day is {nextDay}
             </Text>
-            {/* <Text textStyle="xl">{isLoading ? phrase : ""}</Text> */}
           </>
         }
       </VStack>
