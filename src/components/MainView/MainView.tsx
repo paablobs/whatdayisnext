@@ -7,10 +7,11 @@ import {
   Container,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DayButton from "../DayButton/DayButton";
 import { daysOfWeek, getNextDay } from "../../helpers/days";
 import { getRandomSarcasticPhrase } from "../../helpers/getRandomSarcasticPhrase";
+import { SparkleEffect } from "../ui/SparkleEffect";
 
 const MainView = () => {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -18,9 +19,12 @@ const MainView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMode, setLoadingMode] = useState<"next" | "today">("next");
   const [phrase, setPhrase] = useState(getRandomSarcasticPhrase("next"));
+  const [sparkleTrigger, setSparkleTrigger] = useState(0);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleCompute = () => {
     if (!selectedDay) return;
+    setSparkleTrigger(prev => prev + 1);
     setLoadingMode("next");
     setIsLoading(true);
     setTimeout(() => {
@@ -32,6 +36,7 @@ const MainView = () => {
   };
 
   const computeToday = () => {
+    setSparkleTrigger(prev => prev + 1);
     setLoadingMode("today");
     setIsLoading(true);
     setTimeout(() => {
@@ -90,6 +95,7 @@ const MainView = () => {
         <Box>
           {selectedDay ? (
             <Button
+              ref={buttonRef}
               colorScheme="blue"
               size="lg"
               onClick={handleCompute}
@@ -100,6 +106,7 @@ const MainView = () => {
             </Button>
           ) : (
             <Button
+              ref={buttonRef}
               colorScheme="blue"
               size="lg"
               onClick={computeToday}
@@ -118,6 +125,11 @@ const MainView = () => {
           </>
         }
       </VStack>
+      <SparkleEffect
+        trigger={sparkleTrigger}
+        isLoading={isLoading}
+        originRef={buttonRef}
+      />
     </Container>
   );
 };
