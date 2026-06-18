@@ -26,6 +26,7 @@ const MainView = () => {
     if (!selectedDay) return;
     setSparkleTrigger(prev => prev + 1);
     setLoadingMode("next");
+    setPhrase(getRandomSarcasticPhrase("next"));
     setIsLoading(true);
     setTimeout(() => {
       const result = getNextDay(selectedDay);
@@ -38,6 +39,7 @@ const MainView = () => {
   const computeToday = () => {
     setSparkleTrigger(prev => prev + 1);
     setLoadingMode("today");
+    setPhrase(getRandomSarcasticPhrase("today"));
     setIsLoading(true);
     setTimeout(() => {
       const jsDay = new Date().getDay();
@@ -54,9 +56,6 @@ const MainView = () => {
     const interval = setInterval(() => {
       setPhrase(getRandomSarcasticPhrase(loadingMode));
     }, 2000);
-
-    // set an initial phrase immediately when loading starts
-    setPhrase(getRandomSarcasticPhrase(loadingMode));
 
     return () => clearInterval(interval);
   }, [isLoading, loadingMode]);
