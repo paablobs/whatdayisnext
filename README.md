@@ -1,5 +1,7 @@
 # What Day Is Next?
 
+![What Day Is Next?](public/og-image.svg)
+
 Wake up and don't know what day comes next? Don't worry, that's what machines are for.
 
 A minimalist web application that solves humanity's most trivial problem: figuring out what day of the week comes after another. If your brain is so fried that you need a server for this task, welcome to the club.
