@@ -1,6 +1,6 @@
 # What Day Is Next?
 
-![What Day Is Next?](public/og-image.svg)
+![What Day Is Next?](public/og-image.png)
 
 Wake up and don't know what day comes next? Don't worry, that's what machines are for.
 
