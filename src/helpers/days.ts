@@ -6,10 +6,16 @@ export const daysOfWeek = [
   "Friday",
   "Saturday",
   "Sunday",
-];
+] as const;
 
-export const getNextDay = (currentDay: string): string | null => {
+export type Day = (typeof daysOfWeek)[number];
+
+export const getNextDay = (currentDay: Day): Day => {
   const index = daysOfWeek.indexOf(currentDay);
-  if (index === -1) return null;
   return daysOfWeek[(index + 1) % daysOfWeek.length];
+};
+
+export const getToday = (date = new Date()): Day => {
+  const index = (date.getDay() + 6) % daysOfWeek.length;
+  return daysOfWeek[index];
 };

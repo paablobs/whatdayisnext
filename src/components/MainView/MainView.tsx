@@ -9,45 +9,60 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import DayButton from "../DayButton/DayButton";
-import { daysOfWeek, getNextDay } from "../../helpers/days";
+import { daysOfWeek, getNextDay, getToday, type Day } from "../../helpers/days";
 import { getRandomSarcasticPhrase } from "../../helpers/getRandomSarcasticPhrase";
 import { SparkleEffect } from "../ui/SparkleEffect";
 
 const MainView = () => {
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [nextDay, setNextDay] = useState<string | null>(null);
+  const [selectedDay, setSelectedDay] = useState<Day | null>(null);
+  const [nextDay, setNextDay] = useState<Day | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMode, setLoadingMode] = useState<"next" | "today">("next");
-  const [phrase, setPhrase] = useState(getRandomSarcasticPhrase("next"));
+  const [phrase, setPhrase] = useState(() => getRandomSarcasticPhrase("next"));
   const [sparkleTrigger, setSparkleTrigger] = useState(0);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleCompute = () => {
-    if (!selectedDay) return;
-    setSparkleTrigger(prev => prev + 1);
+    if (!selectedDay || isLoading) return;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    setSparkleTrigger((prev) => prev + 1);
     setLoadingMode("next");
     setPhrase(getRandomSarcasticPhrase("next"));
     setIsLoading(true);
-    setTimeout(() => {
+
+    timeoutRef.current = setTimeout(() => {
       const result = getNextDay(selectedDay);
       setNextDay(result);
       setIsLoading(false);
       setSelectedDay(null);
+      timeoutRef.current = null;
     }, 4000);
   };
 
   const computeToday = () => {
-    setSparkleTrigger(prev => prev + 1);
+    if (isLoading) return;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    setSparkleTrigger((prev) => prev + 1);
     setLoadingMode("today");
     setPhrase(getRandomSarcasticPhrase("today"));
+    setNextDay(null);
     setIsLoading(true);
-    setTimeout(() => {
-      const jsDay = new Date().getDay();
-      const index = (jsDay + 6) % daysOfWeek.length; // map JS 0=Sun..6=Sat to daysOfWeek starting with Monday
-      const todayName = daysOfWeek[index];
-      setSelectedDay(todayName);
-      setNextDay(null);
+
+    timeoutRef.current = setTimeout(() => {
+      setSelectedDay(getToday());
       setIsLoading(false);
+      timeoutRef.current = null;
     }, 4000);
   };
 
@@ -62,43 +77,67 @@ const MainView = () => {
 
   return (
     <Container
-      py={8}
-      h="100dvh"
+      minH="100dvh"
+      py={{ base: 4, md: 8 }}
+      px={{ base: 4, md: 6 }}
       justifyContent="center"
       alignItems="center"
       display="flex"
     >
-      <VStack w="100%" textAlign="center" gap={5}>
+      <VStack w="100%" textAlign="center" gap={{ base: 4, md: 5 }}>
         <Box>
-          <Heading size="6xl" mb={2}>
+          <Heading
+            as="h1"
+            fontSize={{ base: "3xl", sm: "4xl", md: "6xl" }}
+            mb={2}
+          >
             What day is next?
           </Heading>
-          <Text textStyle="2xl">Select what day is today:</Text>
+          <Text fontSize={{ base: "lg", md: "2xl" }}>
+            Select what day is today:
+          </Text>
         </Box>
-        <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 7 }} w="100%">
+        <SimpleGrid
+          columns={{ base: 2, sm: 3, md: 4, lg: 7 }}
+          gap={{ base: 2, md: 3 }}
+          w="100%"
+        >
           {daysOfWeek.map((day) => (
             <DayButton
               key={day}
               day={day}
               isSelected={selectedDay === day}
+              disabled={isLoading}
               onSelect={(d) => {
+                if (isLoading) return;
                 setSelectedDay(d);
                 setNextDay(null);
               }}
             />
           ))}
         </SimpleGrid>
-        <Text textStyle="sm" minH={5}>
-          {isLoading ? phrase : ""}
-        </Text>
-        <Box>
+        <Box minH={5}>
+          {isLoading && (
+            <Text
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              textStyle="sm"
+            >
+              {phrase}
+            </Text>
+          )}
+        </Box>
+        <Box w="100%">
           {selectedDay ? (
             <Button
               ref={buttonRef}
-              colorScheme="blue"
+              colorPalette="blue"
               size="lg"
+              minH="48px"
+              w={{ base: "100%", sm: "auto" }}
               onClick={handleCompute}
-              aria-disabled={isLoading}
+              disabled={isLoading}
               loading={isLoading}
             >
               Compute next day
@@ -106,23 +145,28 @@ const MainView = () => {
           ) : (
             <Button
               ref={buttonRef}
-              colorScheme="blue"
+              colorPalette="blue"
               size="lg"
+              minH="48px"
+              w={{ base: "100%", sm: "auto" }}
               onClick={computeToday}
-              aria-disabled={isLoading}
+              disabled={isLoading}
               loading={isLoading}
             >
               What day is today?
             </Button>
           )}
         </Box>
-        {
-          <>
-            <Text textStyle="xl" visibility={nextDay ? "visible" : "hidden"}>
-              Next day is {nextDay}
-            </Text>
-          </>
-        }
+        {nextDay && (
+          <Text
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            textStyle="xl"
+          >
+            Next day is {nextDay}
+          </Text>
+        )}
       </VStack>
       <SparkleEffect
         trigger={sparkleTrigger}

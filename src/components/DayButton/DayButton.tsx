@@ -1,19 +1,27 @@
 import { Button } from "@chakra-ui/react";
 
-interface DayButtonProps {
-  day: string;
+interface DayButtonProps<Day extends string> {
+  day: Day;
   isSelected?: boolean;
-  onSelect?: (day: string) => void;
+  onSelect?: (day: Day) => void;
+  disabled?: boolean;
 }
 
-const DayButton = ({ day, isSelected = false, onSelect }: DayButtonProps) => {
+const DayButton = <Day extends string>({
+  day,
+  isSelected = false,
+  onSelect,
+  disabled = false,
+}: DayButtonProps<Day>) => {
   return (
     <Button
       onClick={() => onSelect?.(day)}
       variant={isSelected ? "solid" : "outline"}
-      colorScheme={isSelected ? "blue" : undefined}
+      colorPalette={isSelected ? "blue" : undefined}
       aria-pressed={isSelected}
+      disabled={disabled}
       size="md"
+      minH="44px"
       _focus={{ boxShadow: "outline" }}
     >
       {day}

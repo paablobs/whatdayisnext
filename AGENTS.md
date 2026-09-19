@@ -17,10 +17,11 @@ Minimalist React app that calculates the next day of the week. Intentionally sar
 npm run dev          # Start dev server
 npm run build        # Typecheck (tsc -b) + production build
 npm run lint         # ESLint on all files
+npm run test         # Run Vitest tests once
 npm run preview      # Preview production build
 ```
 
-**No test framework is configured.** Don't assume Jest/Vitest exists.
+Tests use Vitest, Testing Library, and jsdom.
 
 ## Path Aliases
 
@@ -51,7 +52,7 @@ src/
 - Days array starts with Monday (not Sunday). JS `Date.getDay()` is remapped: `(jsDay + 6) % 7`.
 - "Compute" actions use `setTimeout` with 4s delay for comedic effect — not actual async work.
 - Loading phrases rotate every 2s via `setInterval` in `useEffect`.
-- Components use Chakra UI v3 props (`colorScheme`, `variant`, `size`).
+- Components use Chakra UI v3 props (`colorPalette`, `variant`, `size`).
 
 ## Code Style
 

@@ -29,7 +29,11 @@ const SPARKLE_COLORS = [
   "#BB8FCE", // Lavender
 ];
 
-const createSparkles = (centerX: number, centerY: number, count: number): Sparkle[] => {
+const createSparkles = (
+  centerX: number,
+  centerY: number,
+  count: number,
+): Sparkle[] => {
   const newSparkles: Sparkle[] = [];
   for (let i = 0; i < count; i++) {
     const angle = Math.random() * Math.PI * 2;
@@ -50,13 +54,40 @@ const createSparkles = (centerX: number, centerY: number, count: number): Sparkl
   return newSparkles;
 };
 
-export const SparkleEffect = ({ trigger, isLoading, originRef }: SparkleEffectProps) => {
+export const SparkleEffect = ({
+  trigger,
+  isLoading,
+  originRef,
+}: SparkleEffectProps) => {
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (trigger === 0 || !originRef.current) return;
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updatePreference);
+    } else {
+      mediaQuery.addListener(updatePreference);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", updatePreference);
+      } else {
+        mediaQuery.removeListener(updatePreference);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (trigger === 0 || prefersReducedMotion || !originRef.current) return;
 
     const rect = originRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -71,10 +102,10 @@ export const SparkleEffect = ({ trigger, isLoading, originRef }: SparkleEffectPr
         intervalRef.current = null;
       }
     };
-  }, [trigger, originRef]);
+  }, [trigger, originRef, prefersReducedMotion]);
 
   useEffect(() => {
-    if (!isLoading || !originRef.current) {
+    if (prefersReducedMotion || !isLoading || !originRef.current) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -101,7 +132,7 @@ export const SparkleEffect = ({ trigger, isLoading, originRef }: SparkleEffectPr
         intervalRef.current = null;
       }
     };
-  }, [isLoading, originRef]);
+  }, [isLoading, originRef, prefersReducedMotion]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -116,6 +147,7 @@ export const SparkleEffect = ({ trigger, isLoading, originRef }: SparkleEffectPr
   return (
     <div
       ref={containerRef}
+      aria-hidden="true"
       style={{
         position: "fixed",
         top: 0,
@@ -127,7 +159,7 @@ export const SparkleEffect = ({ trigger, isLoading, originRef }: SparkleEffectPr
         overflow: "hidden",
       }}
     >
-      {sparkles.map((sparkle) => (
+      {(prefersReducedMotion ? [] : sparkles).map((sparkle) => (
         <div
           key={sparkle.id}
           style={{
