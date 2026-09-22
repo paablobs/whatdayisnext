@@ -25,15 +25,16 @@ const MainView = () => {
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== null) {
         clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
     };
   }, []);
 
   const handleCompute = () => {
     if (!selectedDay || isLoading) return;
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
 
     setSparkleTrigger((prev) => prev + 1);
     setLoadingMode("next");
@@ -51,7 +52,7 @@ const MainView = () => {
 
   const computeToday = () => {
     if (isLoading) return;
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
 
     setSparkleTrigger((prev) => prev + 1);
     setLoadingMode("today");

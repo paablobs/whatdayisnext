@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface Sparkle {
   id: number;
+  createdAt: number;
   x: number;
   y: number;
   size: number;
@@ -29,6 +30,13 @@ const SPARKLE_COLORS = [
   "#BB8FCE", // Lavender
 ];
 
+let nextSparkleId = 0;
+
+const prefersReducedMotionByDefault = () => {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+};
+
 const createSparkles = (
   centerX: number,
   centerY: number,
@@ -42,7 +50,8 @@ const createSparkles = (
     const y = centerY + Math.sin(angle) * distance;
 
     newSparkles.push({
-      id: Date.now() + Math.random(),
+      id: nextSparkleId++,
+      createdAt: Date.now(),
       x,
       y,
       size: Math.random() * 10 + 4,
@@ -60,34 +69,50 @@ export const SparkleEffect = ({
   originRef,
 }: SparkleEffectProps) => {
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    prefersReducedMotionByDefault,
+  );
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastBurstTriggerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+    const updatePreference = () => {
+      const nextPreference = mediaQuery.matches;
+      setPrefersReducedMotion(nextPreference);
+      if (nextPreference) setSparkles([]);
+    };
 
     updatePreference();
-    if (mediaQuery.addEventListener) {
+    if (mediaQuery.addEventListener && mediaQuery.removeEventListener) {
       mediaQuery.addEventListener("change", updatePreference);
-    } else {
-      mediaQuery.addListener(updatePreference);
+      return () => {
+        mediaQuery.removeEventListener("change", updatePreference);
+      };
     }
 
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", updatePreference);
-      } else {
+    if (mediaQuery.addListener && mediaQuery.removeListener) {
+      mediaQuery.addListener(updatePreference);
+      return () => {
         mediaQuery.removeListener(updatePreference);
-      }
-    };
+      };
+    }
   }, []);
 
   useEffect(() => {
-    if (trigger === 0 || prefersReducedMotion || !originRef.current) return;
+    const isNewTrigger = lastBurstTriggerRef.current !== trigger;
+    lastBurstTriggerRef.current = trigger;
+
+    if (
+      !isNewTrigger ||
+      trigger === 0 ||
+      prefersReducedMotion ||
+      !originRef.current
+    ) {
+      return;
+    }
 
     const rect = originRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -95,13 +120,6 @@ export const SparkleEffect = ({
 
     const initialSparkles = createSparkles(centerX, centerY, 25);
     setSparkles(initialSparkles);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
   }, [trigger, originRef, prefersReducedMotion]);
 
   useEffect(() => {
@@ -118,10 +136,10 @@ export const SparkleEffect = ({
     const centerY = rect.top + rect.height / 2;
 
     intervalRef.current = setInterval(() => {
+      const fresh = createSparkles(centerX, centerY, 8);
       setSparkles((prev) => {
-        const fresh = createSparkles(centerX, centerY, 8);
         const cutoff = Date.now() - 3000;
-        const alive = prev.filter((s) => s.id > cutoff);
+        const alive = prev.filter((s) => s.createdAt > cutoff);
         return [...alive, ...fresh];
       });
     }, 300);
@@ -135,18 +153,17 @@ export const SparkleEffect = ({
   }, [isLoading, originRef, prefersReducedMotion]);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || prefersReducedMotion) return;
 
     const timer = setTimeout(() => {
       setSparkles([]);
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isLoading]);
+  }, [isLoading, prefersReducedMotion]);
 
   return (
     <div
-      ref={containerRef}
       aria-hidden="true"
       style={{
         position: "fixed",
